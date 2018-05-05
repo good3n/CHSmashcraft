@@ -1,0 +1,2 @@
+# CHSmashcraft
+Smashcraft MethodScript
