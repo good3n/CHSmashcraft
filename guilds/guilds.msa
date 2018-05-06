@@ -1,11 +1,9 @@
 ############################################################
 # +------------------------------------------------------+ #
-# |               Guilds by GlareMaster                  | #
-# |               Expanded by Smashbox                   | #
+# |            Guilds Expanded by Smashbox               | #
+# |            Guilds Plugin by GlareMasters             | #
 # +------------------------------------------------------+ #
 ############################################################
-
-#New bot test commit 3
 
 *:/g = call_alias('/guilds');
 *:/g help [$] = call_alias('/guilds');
@@ -13,7 +11,7 @@
 *:/guilds help [$] = call_alias('/guilds');
 *:/guilds = run('/dm open guilds');
 
-*:/guild flags = foreach(split('\\n', read('docs/guild-flags.txt')), @msg) { msg(colorize(@msg)) }
+*:/guild flags = foreach(split('\\n', read('../../docs/guild-flags.txt')), @msg) { msg(colorize(@msg)) }
 *:/guild flag = call_alias('/guild flags');
 
 *:/gc = run('/guild chat');
@@ -80,7 +78,7 @@
 *:/guilds greeting [$] = call_alias('/g greeting'$);
 *:/g greeting [$] = >>>
   if($ == '') {
-    _gdie('The command is &a/guild greeting &8<&amessage&8>');
+    _gdie('Usage: &a/guild greeting &8<&amessage&8>');
   }
   @gm = set_placeholders(player(), '%Guilds_role%');
   if(@gm != 'GuildMaster') {
@@ -100,7 +98,7 @@
 *:/guilds farewell [$] = call_alias('/g farewell'$);
 *:/g farewell [$] = >>>
   if($ == '') {
-    _gdie('The command is &a/guild farewell &8<&amessage&8>');
+    _gdie('Usage: &a/guild farewell &8<&amessage&8>');
   }
   @gm = set_placeholders(player(), '%Guilds_role%');
   if(@gm != 'GuildMaster') {
@@ -147,7 +145,7 @@
           sk_region_addmember(@plot, pworld(), player());
           sk_region_setparent(pworld(), @plot, @guild);
           run('//sel');
-          _gdie('Success! Plot amed&8:&a'$plot);
+          _gdie('Success! Plot claimed&8: &a'.$plot);
         }
       }
     }
