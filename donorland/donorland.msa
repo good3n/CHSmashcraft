@@ -127,7 +127,7 @@
     _dldie('You are not in the right world to use this command.');
   }
   if(!has_permission('smash.donorland')) {
-    _dldie('You must be at least &8[&aLord&8] &7donor rank to use this command. Type &5/buy');
+    _dldie('You must be &8[&aLord&8] &7donor rank to use this command. Type &5/buy');
   }
   sk_region_create(pworld(), @tempregion, array(array(@loc['x'] + 50, 255, @loc['z'] + 50), array(@loc['x'] - 50, 0, @loc['z'] - 50)));
   @regions = sk_all_regions(pworld());
@@ -142,16 +142,12 @@
   }
   sk_region_remove(pworld(), @tempregion);
   sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
-  _dldie('Success! You have moved your &5&lDonorland &7to &f'.ploc());
+  _dldie('&aSuccess! &7You\'ve moved your &5&lDonorland &7to \n&fx: '.ploc()[0].' z: '.ploc()[2]);
+
 <<<
 
 *:/dltest = >>>
-  @player = player();
-  @pregion = 'dl-'.@player;
-  foreach(sk_all_regions(pworld()), @regions){
-    array_remove_values(array(@regions), @pregion);
-    msg(array(@regions));
-  }
+  msg(ploc(player())[0][1]);
 <<<
 
 *:/donorland info = >>>
