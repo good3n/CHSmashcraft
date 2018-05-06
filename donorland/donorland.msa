@@ -74,7 +74,7 @@
   });
 <<<
 
-*:/donorland add $player = >>>
+*:/donorland trust $player = >>>
   @player = player();
   @pregion = 'dl-'.@player;
   if(pworld(@player) != 'survival') {
@@ -82,13 +82,29 @@
   }
   if(!has_permission('smash.donorland')) {
     _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
-  } else {
-    runas('~console', '/rg addmember '.@pregion.' -w '.pworld().' -n '.$player);
-    _dldie('Added&f '.$player.' &7to your &5&lDonorland&7!');
   }
+  _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
+  @id = bind(player_command, null, null, @event, @pregion) {
+    if(@event['command'] == '/confirm') {
+      runas('~console', '/rg addmember '.@pregion.' -w '.pworld().' -n '.$player);
+      _dlmsg('Trusted&f '.$player);
+    } else if(@event['command'] == '/cancel') {
+      _dlmsg('&f'.$player.' &7was not trusted.');
+    } else {
+      _dlmsg('Trust request cancelled');
+    }
+    unbind();
+    cancel();
+  }
+  set_timeout(15000, closure(){
+    if(has_bind(@id)) {
+      unbind(@id);
+      _dlmsg('&cCommand expired. &f'.$player.' &7not trusted.');
+    }
+  });
 <<<
 
-*:/donorland rem $player = >>>
+*:/donorland untrust $player = >>>
   @player = player();
   @pregion = 'dl-'.@player;
   if(pworld(@player) != 'survival') {
@@ -99,7 +115,7 @@
   } else {
     #sk_region_remmember(@pregion, pworld(), $player);
     runas('~console', '/rg removemember '.@pregion.' -w '.pworld().' -n '.$player);
-    _dldie('Removed&f '.$player.' &7from your &5&lDonorland&7!');
+    _dldie('Untrusted&f '.$player);
   }
 <<<
 
@@ -145,9 +161,7 @@
   }
   sk_region_remove(pworld(), @tempregion);
   _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
-  @id = bind(player_command, null, null, @event, @pregion) {
-    @player = player();
-    @loc = ploc();
+  @id = bind(player_command, null, null, @event, @pregion, @player, @loc) {
     if(@event['command'] == '/confirm') {
       if(has_permission('smash.donorland.t4')) {
         sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
