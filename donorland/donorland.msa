@@ -119,7 +119,6 @@
 <<<
 
 *:/donorland move = >>>
-#array_remove_values(@regions, 'regionName') THIS MAN THIS!!!!!!!!!!!!!
   @player = player();
   @loc = ploc();
   @pregion = 'dl-'.@player;
@@ -131,16 +130,28 @@
     _dldie('You must be at least &8[&aLord&8] &7donor rank to use this command. Type &5/buy');
   }
   sk_region_create(pworld(), @tempregion, array(array(@loc['x'] + 50, 255, @loc['z'] + 50), array(@loc['x'] - 50, 0, @loc['z'] - 50)));
-  foreach(sk_all_regions(pworld()), @region){
-    if(to_lower(@region) != to_lower(@tempregion)) {
-      if(sk_region_overlaps(pworld(), @tempregion, @region)) {
+  @regions = sk_all_regions(pworld());
+  array_remove_values(@regions, @pregion);
+  foreach(@regions, @oregions){
+    if(to_lower(@oregions) != to_lower(@tempregion)) {
+      if(sk_region_overlaps(pworld(), @tempregion, @oregions)) {
         sk_region_remove(pworld(), @tempregion);
-        _dldie('This claim is too close to &f'.@region.'&7. Try somewhere else.');
+        _dldie('This claim is too close to &f'.@oregions.'&7. Try somewhere else.');
       }
     }
   }
+  sk_region_remove(pworld(), @tempregion);
   sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
   _dldie('Success! You have moved your &5&lDonorland &7to &f'.ploc());
+<<<
+
+*:/dltest = >>>
+  @player = player();
+  @pregion = 'dl-'.@player;
+  foreach(sk_all_regions(pworld()), @regions){
+    array_remove_values(array(@regions), @pregion);
+    msg(array(@regions));
+  }
 <<<
 
 *:/donorland info = >>>
