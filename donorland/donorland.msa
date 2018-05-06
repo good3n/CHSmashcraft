@@ -123,6 +123,9 @@
   @loc = ploc();
   @pregion = 'dl-'.@player;
   @tempregion = 'temp-'.@player;
+  if(!sk_region_exists(pworld(), @pregion)) {
+    _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
+  }
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
@@ -146,10 +149,6 @@
 
 <<<
 
-*:/dltest = >>>
-  msg(ploc(player())[0][1]);
-<<<
-
 *:/donorland info = >>>
   @player = player();
   @pregion = 'dl-'.@player;
@@ -157,7 +156,7 @@
     _dldie('You must be at least &8[&aLord&8] &7donor rank to use this command. Type &5/buy');
   }
   if(!sk_region_exists(pworld(), @pregion)) {
-    _dldie('Derp. You don\'t have any &5Donorland &7claimed.');
+    _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
   }
   @xloc = array(sk_region_info(@pregion, 'survival', 0)[0][0]);
   @zloc = array(sk_region_info(@pregion, 'survival', 0)[0][2]);
