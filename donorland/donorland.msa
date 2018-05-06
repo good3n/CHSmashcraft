@@ -144,14 +144,33 @@
     }
   }
   sk_region_remove(pworld(), @tempregion);
-  if(has_permission('smash.donorland.t4')) {
-    sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
-  } else if(has_permission('smash.donorland.t6')) {
-    sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 25, 255, @loc['z'] + 25), array(@loc['x'] - 25, 0, @loc['z'] - 25)));
-  } else if(has_permission('smash.donorland.t7')) {
-    sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 30, 255, @loc['z'] + 30), array(@loc['x'] - 30, 0, @loc['z'] - 30)));
+  _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
+  @id = bind(player_command, null, null, @event, @pregion) {
+    @player = player();
+    @loc = ploc();
+    if(@event['command'] == '/confirm') {
+      if(has_permission('smash.donorland.t4')) {
+        sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
+      } else if(has_permission('smash.donorland.t6')) {
+        sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 25, 255, @loc['z'] + 25), array(@loc['x'] - 25, 0, @loc['z'] - 25)));
+      } else if(has_permission('smash.donorland.t7')) {
+        sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 30, 255, @loc['z'] + 30), array(@loc['x'] - 30, 0, @loc['z'] - 30)));
+      }
+      _dlmsg('&aSuccess! &7You\'ve moved your &5&lDonorland &7to \n&fx: '.ploc()[0].' z: '.ploc()[2]);
+    } else if(@event['command'] == '/cancel') {
+      _dlmsg('Your donorland has not been moved.');
+    } else {
+      _dlmsg('Move canceled.');
+    }
+    unbind();
+    cancel();
   }
-  _dldie('&aSuccess! &7You\'ve moved your &5&lDonorland &7to \n&fx: '.ploc()[0].' z: '.ploc()[2]);
+  set_timeout(15000, closure(){
+    if(has_bind(@id)) {
+      unbind(@id);
+      _dlmsg('&cCommand expired. &7Your donorland has not been moved.');
+    }
+  });
 <<<
 
 *:/donorland info = >>>
