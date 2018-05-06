@@ -5,6 +5,8 @@
 # +------------------------------------------------------+ #
 ############################################################
 
+#New bot test commit
+
 *:/g = call_alias('/guilds');
 *:/g help [$] = call_alias('/guilds');
 *:/guild help [$] = call_alias('/guilds');
