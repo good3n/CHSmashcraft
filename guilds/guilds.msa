@@ -1,3 +1,4 @@
+
 ############################################################
 # +------------------------------------------------------+ #
 # |            Guilds Expanded by Smashbox               | #
@@ -16,37 +17,70 @@
 
 *:/gc = run('/guild chat');
 
-*:/guild trust $player = >>>
-  @player = player();
-  @guild = 'guild-'.@player
-  if(!sk_region_exists(pworld(), @guild)) {
-    _gdie('You don\'t have a guild claim.');
-  } else {
-    #sk_region_addmember(@guild, pworld(), $player);
-    runas('~console', '/rg addmember '.@guild.' -w '.pworld().' -n '.$player);
-    _gdie('Added&f '.$player.' &7to your guild claim. Note they now have access to break ANYTHING!');
+*:/guild trust [$player] = >>>
+  if($player == '') {
+    _gdie('Usage: &a/g trust &8<&aplayer&8>');
   }
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @gregion = 'guild-'.@gname
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
+  }
+  if(!sk_region_exists('survival', @gregion)) {
+    _gdie('You don\'t have a guild claim.');
+  }
+  _gmsg('This player will have FULL access to your guild claim. Are you sure? Type &a/confirm&7 or &c/cancel');
+  @id = bind(player_command, null, null, @event, @gregion) {
+    if(@event['command'] == '/confirm') {
+      #sk_region_addmember(@gregion, pworld(), $player);
+      runas('~console', '/rg addmember '.@gregion.' -w survival -n '.$player);
+      _gmsg('Added&f '.$player.' &7to your guild claim.');
+    } else if(@event['command'] == '/cancel') {
+      _gmsg('&f'.$player.' &7was not trusted.');
+    } else {
+      _gmsg('Trust request cancelled');
+    }
+    unbind();
+    cancel();
+  }
+  set_timeout(15000, closure(){
+    if(has_bind(@id)) {
+      unbind(@id);
+      _gmsg('&cCommand expired. &f'.$player.' &7not trusted.');
+    }
+  });
 <<<
 
-*:/guild untrust $player = >>>
-  @player = player();
-  @guild = 'guild-'.@player
-  if(!sk_region_exists(pworld(), @guild)) {
-    _gdie('You don\'t have a guild claim.');
-  } else {
-    #sk_region_remmember(@guild, pworld(), $player);
-    runas('~console', '/rg removemember '.@guild.' -w '.pworld().' '.$player);
-    _gdie('Removed&f '.$player.' &7from your guild claim.');
+*:/guild untrust [$player] = >>>
+  if($player == '') {
+    _gdie('Usage: &a/g untrust &8<&aplayer&8>');
   }
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @gregion = 'guild-'.@gname
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
+  }
+  if(!sk_region_exists('survival', @gregion)) {
+    _gdie('You don\'t have a guild claim.');
+  }
+  #sk_region_remmember(@gregion, pworld(), $player);
+  runas('~console', '/rg removemember '.@gregion.' -w survival '.$player);
+  _gdie('Removed&f '.$player.' &7from your guild claim.');
 <<<
 
 *:/guild trustlist = >>>
-  @player = player();
-  @guild = 'guild-'.@player
-  if(!sk_region_exists(pworld(), @guild)) {
-    _gdie('You are not a Guild Master or are not in the right world.');
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @gregion = 'guild-'.@gname
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
   }
-  @trustlist = sk_region_members(@guild, pworld())[names]
+  if(!sk_region_exists('survival', @gregion)) {
+    _gdie('You don\'t have a guild claim.');
+  }
+  @trustlist = sk_region_members(@gregion, 'survival')[names]
   @players = array_implode(@trustlist, color(7).', '.color(a));
   _gmsg(
     'Members with claim access&7:'
@@ -80,18 +114,17 @@
   if($ == '') {
     _gdie('Usage: &a/guild greeting &8<&amessage&8>');
   }
-  @gm = set_placeholders(player(), '%Guilds_role%');
-  if(@gm != 'GuildMaster') {
-    _gdie('You are not a Guild Master.');
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @gregion = 'guild-'.@gname
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
   }
-  @player = player();
-  @guild = 'guild-'.@player
-  if(!sk_region_exists(pworld(), @guild)) {
-    _gdie('You don\'t have any guild land claimed in this world.');
-  } else {
-    sk_region_flag(pworld(), @guild, greeting, $);
-    _gdie('Greeting updated to&8: &f'.$);
+  if(!sk_region_exists('survival', @gregion)) {
+    _gdie('You don\'t have a guild claim.');
   }
+  sk_region_flag(pworld(), @gregion, greeting, $);
+  _gdie('Greeting updated to&8: &f'.$);
 <<<
 
 *:/guild farewell [$] = call_alias('/g farewell'$);
@@ -100,34 +133,42 @@
   if($ == '') {
     _gdie('Usage: &a/guild farewell &8<&amessage&8>');
   }
-  @gm = set_placeholders(player(), '%Guilds_role%');
-  if(@gm != 'GuildMaster') {
-    _gdie('You are not a Guild Master.');
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @gregion = 'guild-'.@gname
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
   }
-  @player = player();
-  @guild = 'guild-'.@player
-  if(!sk_region_exists(pworld(), @guild)) {
-    _gdie('You don\'t have any guild land claimed in this world.');
-  } else {
-    sk_region_flag(pworld(), @guild, farewell, $);
-    _gdie('Farewell updated to&8: &f'.$);
+  if(!sk_region_exists('survival', @gregion)) {
+    _gdie('You don\'t have a guild claim.');
   }
+  sk_region_flag(pworld(), @gregion, farewell, $);
+  _gdie('Farewell updated to&8: &f'.$);
 <<<
 
 *:/plot = foreach(split('\\n', read('docs/plot.txt')), @msg) { msg(colorize(@msg)) }
 *:/plots = call_alias('/plot')
 
-*:/plot claim $plot = >>>
-  if(!has_permission('guilds.role.guildmaster') && (!has_permission('guild.level.2'))) {
-    _gdie('You are not a Guild Master or at least guild level 2.');
+*:/plot claim [$plot] = >>>
+  if($plot == '') {
+    _gdie('Usage: &a/plot unclaim &8<&aplotname&8>');
   }
   @player = player();
   @pos1 = sk_pos1(@player);
   @pos2 = sk_pos2(@player);
   @parent = sk_regions_at(ploc())
-  @guild = 'guild-'.player();
-  @plot = @guild.'-'.$plot
-  if(is_null(sk_pos1()) || is_null(sk_pos2)) {
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @glevel = set_placeholders(player(), '%Guilds_tier%');
+  @gregion = 'guild-'.@gname
+  @plot = @gregion.'-'.$plot
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
+  }
+  if(@glevel < '2') {
+    _gdie('Your guild must be at least &flevel 2 &7to use plots.');
+  }
+  if(is_null(sk_pos1()) || is_null(sk_pos2())) {
     _gdie('Make a selection first! Duh!');
   }
   if(sk_region_exists(pworld(), @plot)) {
@@ -136,76 +177,112 @@
   /* for every region at the location @pos1, @region is replaced with the region name. */
   foreach(sk_regions_at(@pos1), @region) {
     /*if the owner of the region in question is the player */
-    if(array_contains_ic(sk_region_owners(@region, pworld())[names], @player)) {
+    #if(array_contains_ic(sk_region_owners(@region, pworld())[names], @player)) {
+    if(@region == @gregion) {
       /*if the second location is also in the region we are checking */
       if(array_contains(sk_regions_at(@pos2), @region)) {
         if(@parent) {
           /* Probably add some checking here to make sure users name is proper */
           sk_region_create(pworld(), @plot, array(@pos1, @pos2));
           sk_region_addmember(@plot, pworld(), player());
-          sk_region_setparent(pworld(), @plot, @guild);
+          sk_region_setparent(pworld(), @plot, @gregion);
           run('//sel');
           _gdie('Success! Plot claimed&8: &a'.$plot);
         }
       }
     }
   }
+  msg(@region)
   _gdie('&cHey dummy&7! Don\'t create plots outside of your land!');
 <<<
 
-*:/plot unclaim $plot = >>>
-  if(!has_permission('guilds.role.guildmaster') && (!has_permission('guild.level.2'))) {
-    _gdie('You are not a Guild Master or at least guild level 2.');
+/* remove full region name */
+*:/plot unclaim [$plot] = >>>
+  if($plot == '') {
+    _gdie('Usage: &a/plot unclaim &8<&aplotname&8>');
   }
-  @guild = 'guild-'.player();
-  @plot = @guild.'-'.$plot
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @glevel = set_placeholders(player(), '%Guilds_tier%');
+  @gregion = 'guild-'.@gname
+  @plot = @gregion.'-'.$plot
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
+  }
+  if(@glevel < '2') {
+    _gdie('Your guild must be at least &flevel 2 &7to use plots.');
+  }
   if(!sk_region_exists(pworld(), @plot)) {
     _gdie('Typo? There is no plot by the name of &c'.$plot);
-  } else {
-    sk_region_remove(pworld(), @plot);
-    _gdie('Success! Removed plot &a'.@plot);
   }
+  sk_region_remove(pworld(), @plot);
+  _gdie('Success! Removed plot &a'.@plot);
 <<<
 
+/* check to see if player is already on plot */
 *:/plot add $player $plot = >>>
-  if(!has_permission('guilds.role.guildmaster') && (!has_permission('guild.level.2'))) {
-    _gdie('You are not a Guild Master or at least guild level 2.');
+  if($player == '' || $plot == '') {
+    _gdie('Usage: &a/plot add &8<&aplayer&8> &8<&aplot&8>');
   }
-  @player = player();
-  @guild = 'guild-'.player();
-  @plot = @guild.'-'.$plot
-  if(!sk_region_exists(pworld(), @plot)) {
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @glevel = set_placeholders(player(), '%Guilds_tier%');
+  @gregion = 'guild-'.@gname
+  @plot = @gregion.'-'.$plot
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
+  }
+  if(@glevel < '2') {
+    _gdie('Your guild must be at least &flevel 2 &7to use plots.');
+  }
+  if(!sk_region_exists('survival', @plot)) {
     _gdie('Typo? There is no plot by the name of &c'.$plot);
-  } else {
-    sk_region_addmember(@plot, pworld(), $player);
-    _gdie('Success! &f'.$player.' &7added to plot &a'.$plot.'&7!');
   }
+  #sk_region_addmember(@plot, 'survival', $player);
+  runas('~console', '/rg addmember '.@plot.' -w survival -n '.$player);
+  _gdie('Success! &f'.$player.' &7added to plot &a'.$plot.'&7!');
 <<<
 
-*:/plot rem $player $plot = >>>
-  if(!has_permission('guilds.role.guildmaster') && (!has_permission('guild.level.2'))) {
-    _gdie('You are not a Guild Master or at least guild level 2.');
+/* check to see if player is on plot */
+*:/plot rem [$player] [$plot] = >>>
+  if($player == '' || $plot == '') {
+    _gdie('Usage: &a/plot rem &8<&aplayer&8> &8<&aplot&8>');
   }
-  @player = player();
-  @guild = 'guild-'.player();
-  @plot = @guild.'-'.$plot
-  if(!sk_region_exists(pworld(), @plot)) {
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @glevel = set_placeholders(player(), '%Guilds_tier%');
+  @gregion = 'guild-'.@gname
+  @plot = @gregion.'-'.$plot
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
+  }
+  if(@glevel < '2') {
+    _gdie('Your guild must be at least &flevel 2 &7to use plots.');
+  }
+  if(!sk_region_exists('survival', @plot)) {
     _gdie('Typo? There is no plot by the name of &c'.$plot);
-  } else {
-    sk_region_remmember(@plot, pworld(), $player);
-    _gdie('Success! &f'.$player.' &7removed from plot &a'.$plot.'&7!');
   }
+  #sk_region_remmember(@plot, 'survival', $player);
+  runas('~console', '/rg removemember '.@plot.' -w survival -n '.$player);
+  _gdie('Success! &f'.$player.' &7removed from plot &a'.$plot.'&7!');
 <<<
 
+/* return plots horizontal vs vertical? */
 *:/plot list = >>>
-  @guild = 'guild-'.player();
-  if(!has_permission('guilds.role.guildmaster') && (!has_permission('guild.level.2'))) {
-    _gdie('You are not a Guild Master or at least guild level 2.');
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @glevel = set_placeholders(player(), '%Guilds_tier%');
+  @gregion = 'guild-'.@gname
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
   }
-  if(!sk_region_exists(pworld(), @guild)) {
+  if(@glevel < '2') {
+    _gdie('Your guild must be at least &flevel 2 &7to use plots.');
+  }
+  if(!sk_region_exists('survival', @gregion)) {
     _gdie('You do not have any Guild claimed land in this world.');
   }
-  @regions = sk_region_intersect(pworld(), @guild);
+  @regions = sk_region_intersect(pworld(), @gregion);
   _gmsg('You have the following plots&7:');
   foreach(@value in @regions){
     @split = split('-', @value);
@@ -216,27 +293,36 @@
   }
 <<<
 
-*:/plot info $plot = >>>
-  if(!has_permission('guilds.role.guildmaster')) {
-    _gdie('You are not a Guild Master.');
+/* clean up array */
+*:/plot info [$plot] = >>>
+  if($plot == '') {
+    _gdie('Usage: &a/plot info &8<&aplotname&8>');
   }
-  if(!has_permission('guild.level.2')) {
-    _gdie('Only level 2 Guilds can use plots.');
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  @grole = set_placeholders(player(), '%Guilds_role%');
+  @glevel = set_placeholders(player(), '%Guilds_tier%');
+  @gregion = 'guild-'.@gname
+  @plot = @gregion.'-'.$plot
+  if(@grole != 'GuildMaster' && @grole != 'Officer') {
+    _gdie('You do not meet the requirements to do this.');
   }
-  @player = player();
-  @guild = 'guild-'.@player
-  @plot = @guild.'-'.$plot
-  if(!sk_region_exists(pworld(), @guild)) {
-    _gdie('You are not a Guild Master or you\'re not in the right world.');
-  } else {
-    die(msg(sk_region_members(@guild, pworld())[names]));
+  if(@glevel < '2') {
+    _gdie('Your guild must be at least &flevel 2 &7to use plots.');
   }
+  if(!sk_region_exists('survival', @gregion)) {
+    _gdie('You don\'t have a guild claim.');
+  }
+  if(!sk_region_exists('survival', @plot)) {
+    _gdie('Typo? There is no plot by the name of &c'.$plot);
+  }
+  die(msg(sk_region_members(@plot, pworld())[names]));
 <<<
 
 *:/guild sethome = call_alias('/g sethome');
 *:/guilds sethome = call_alias('/g sethome');
 *:/g sethome = >>>
-  if(!array_contains_ic(sk_current_regions(player()), 'guild-'.player())) {
+  @gname = set_placeholders(player(), '%Guilds_name%');
+  if(!array_contains_ic(sk_current_regions(player()), 'guild-'.@gname)) {
     _gdie('Guild homes can only be set inside guild of claims.');
   } else {
     run('/guilds sethome');
