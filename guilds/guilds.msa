@@ -17,6 +17,7 @@
 
 *:/gc = run('/guild chat');
 
+/* check if player is aleady trusted */
 *:/guild trust [$player] = >>>
   if($player == '') {
     _gdie('Usage: &a/g trust &8<&aplayer&8>');
@@ -52,6 +53,7 @@
   });
 <<<
 
+/* check if player is trusted */
 *:/guild untrust [$player] = >>>
   if($player == '') {
     _gdie('Usage: &a/g untrust &8<&aplayer&8>');
@@ -70,6 +72,7 @@
   _gdie('Removed&f '.$player.' &7from your guild claim.');
 <<<
 
+/* return message if empty */
 *:/guild trustlist = >>>
   @gname = set_placeholders(player(), '%Guilds_name%');
   @grole = set_placeholders(player(), '%Guilds_role%');
@@ -151,7 +154,7 @@
 
 *:/plot claim [$plot] = >>>
   if($plot == '') {
-    _gdie('Usage: &a/plot unclaim &8<&aplotname&8>');
+    _gdie('Usage: &a/plot claim &8<&aplotname&8>');
   }
   @player = player();
   @pos1 = sk_pos1(@player);
