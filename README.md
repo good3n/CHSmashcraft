@@ -1,2 +1,6 @@
-# ch-smashcraft
-CommandHelper apps for Smashcraft
+# CommandHelper for Smashcraft
+##### www.smashcraft.net
+
+## Guilds
+
+## Donorland
