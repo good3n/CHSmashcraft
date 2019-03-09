@@ -1,2 +1,2 @@
-# CHSmashcraft
-Smashcraft MethodScript
+# ch-smashcraft
+CommandHelper apps for Smashcraft
