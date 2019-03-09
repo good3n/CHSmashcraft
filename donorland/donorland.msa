@@ -6,30 +6,52 @@
 
 *:/donorland = foreach(split('\\n', read('../../docs/donorland.txt')), @msg) { msg(colorize(@msg)) }
 
+#===============================#
+# claim
+#===============================#
+
 *:/donorland claim = >>>
+  
+  // vars
   @player = player();
   @loc = ploc();
   @dloc = array(@loc['x'] + 20, @loc['y'], @loc['z'] - 20, pworld());
   @pregion = 'dl-'.@player;
   @tempregion = 'temp-'.@player;
+
+  // check permission
   if(!has_permission('smash.donorland')) {
     _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
   }
+
+  // check player world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
+
+  // check if regiion exists
   if(sk_region_exists(pworld(), @pregion)) {
     _dldie('Uh.. you aready have a claim?');
   }
+
+  // create temp region for overlap check
   sk_region_create(pworld(), @tempregion, array(array(@loc['x'] + 50, 255, @loc['z'] + 50), array(@loc['x'] - 50, 0, @loc['z'] - 50)));
+  
+  // get all regions
   foreach(sk_all_regions(pworld()), @region){
+
+    // check if tempregion exists in foreach region above
     if(to_lower(@region) != to_lower(@tempregion)) {
+
+      // conduct overlap test
       if(sk_region_overlaps(pworld(), @tempregion, @region)) {
         sk_region_remove(pworld(), @tempregion);
         _dldie('This claim is too close to &f'.@region.'&7. Try somewhere else.');
       }
     }
   }
+
+  // pass overlap test
   sk_region_remove(pworld(), @tempregion);
   sk_region_create(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
   sk_region_addowner(@pregion, pworld(), @player);
@@ -39,20 +61,35 @@
   sk_region_flag(pworld(), @pregion, 'blocked-cmds', '/sethome, /tpahere, /tpaccept', NON_MEMBERS);
   runas('~console', '/rg flag '.@pregion.' glide -w survival -g nonmembers deny');
   _dldie('Success! Your &5&lDonorland &7has been claimed.');
+  
 <<<
 
+#===============================#
+# unclaim
+#===============================#
+
 *:/donorland unclaim = >>>
+
+  // vars
   @player = player();
   @pregion = 'dl-'.@player;
+
+  // check permission
   if(!has_permission('smash.donorland')) {
     _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
   }
+
+  // check player world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
+
+  // check if region exists
   if(!sk_region_exists(pworld(), @pregion)) {
     _dldie('You don\'t have any &5&lDonorland&7 to unclaim.');
   }
+
+  // require player confirmation
   _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
   @id = bind(player_command, null, null, @event, @pregion) {
     if(@event['command'] == '/confirm') {
@@ -72,17 +109,29 @@
       _dlmsg('&cCommand expired. &7Your donorland claim remains.');
     }
   });
+
 <<<
 
+#===============================#
+# trust
+#===============================#
 *:/donorland trust $player = >>>
+
+  // vars
   @player = player();
   @pregion = 'dl-'.@player;
+
+  // check player world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
+
+  // check permission
   if(!has_permission('smash.donorland')) {
     _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
   }
+
+  // require player confirmation
   _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
   @id = bind(player_command, null, null, @event, @pregion) {
     if(@event['command'] == '/confirm') {
@@ -102,64 +151,116 @@
       _dlmsg('&cCommand expired. &f'.$player.' &7not trusted.');
     }
   });
+
 <<<
 
+#===============================#
+# untrust
+#===============================#
 *:/donorland untrust $player = >>>
+
+  // vars
   @player = player();
   @pregion = 'dl-'.@player;
+
+  // check player world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
+
+  // check permission
   if(!has_permission('smash.donorland')){
     _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
   } else {
+    // ugly uuid is ugly
     #sk_region_remmember(@pregion, pworld(), $player);
     runas('~console', '/rg removemember '.@pregion.' -w '.pworld().' -n '.$player);
     _dldie('Untrusted&f '.$player);
   }
+
 <<<
 
+#===============================#
+# upgrade
+#===============================#
 *:/donorland upgrade = >>>
+
+  // vars
   @player = player();
   @pregion = 'dl-'.@player;
+
+  // check permission
   if(!has_permission('smash.donorland')) {
     _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
   }
+
+  // check world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
+
+  // check if region exists
   if(!sk_region_exists(pworld(), @pregion)) {
     _dldie('You don\'t have any &5&lDonorland&7 to upgrade.');
   }
+
+  // whoops
   _dldie('Under construction')
+
 <<<
 
+#===============================#
+# move
+#===============================#
+
 *:/donorland move = >>>
+
+  // vars
   @player = player();
   @loc = ploc();
   @pregion = 'dl-'.@player;
   @tempregion = 'temp-'.@player;
+
+  // check if region exists
   if(!sk_region_exists(pworld(), @pregion)) {
     _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
   }
+
+  // check player world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
+
+  // check permission
   if(!has_permission('smash.donorland')) {
     _dldie('You must be &aLord &7donor rank to use this command. Type &5/buy');
   }
+
+  // create temp region for overlap test
   sk_region_create(pworld(), @tempregion, array(array(@loc['x'] + 50, 255, @loc['z'] + 50), array(@loc['x'] - 50, 0, @loc['z'] - 50)));
+  
+  // get all regions
   @regions = sk_all_regions(pworld());
+
+  // remove this region from all regions list
   array_remove_values(@regions, @pregion);
   foreach(@regions, @oregions){
+
+    // check if temp region is in other regions list
     if(to_lower(@oregions) != to_lower(@tempregion)) {
+
+      // check if temp region overlaps other regions
       if(sk_region_overlaps(pworld(), @tempregion, @oregions)) {
         sk_region_remove(pworld(), @tempregion);
         _dldie('This claim is too close to &f'.@oregions.'&7. Try somewhere else.');
       }
     }
   }
+
+  // pass overlap test and remove temp region
   sk_region_remove(pworld(), @tempregion);
+
+  // require player confirmation
   _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
   @id = bind(player_command, null, null, @event, @pregion, @player, @loc) {
     if(@event['command'] == '/confirm') {
@@ -185,42 +286,58 @@
       _dlmsg('&cCommand expired. &7Your donorland has not been moved.');
     }
   });
+
 <<<
 
+#===============================#
+# move
+#===============================#
+
 *:/donorland info = >>>
+
+  // vars
   @player = player();
   @pregion = 'dl-'.@player;
-  if(!has_permission('smash.donorland')){
-    _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
-  }
-  if(!sk_region_exists(pworld(), @pregion)) {
-    _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
-  }
   @xloc = array(sk_region_info(@pregion, 'survival', 0)[0][0]);
   @zloc = array(sk_region_info(@pregion, 'survival', 0)[0][2]);
   @flags = sk_region_flags(@pregion, pworld());
   @trustlist = sk_region_members(@pregion, pworld())[names]
   @players = array_implode(@trustlist, color(7).', '.color(f));
+
+  // check permission
+  if(!has_permission('smash.donorland')){
+    _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
+  }
+
+  // check if region exists
+  if(!sk_region_exists(pworld(), @pregion)) {
+    _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
+  }
+  
   msg(colorize('&5&lDonorland &8\u00BB &7Information'));;
 
+  // check if player specified
   if(@players == '') {
     msg(colorize('&7Members&8: &fThere are no members added to your donorland.'));;
   } else {
     msg(colorize('&7Members&8: &f'.@players));;
   }
 
+  // check greeting flag status
   if(!array_index_exists(@flags, 'greeting')) {
     msg(colorize('&7Greeting&8: &cNo greeting set.'));
   } else {
     msg(colorize('&7Greeting&8: &f'.@flags['greeting']));
   }
 
+  // check farewell flag status
   if(!array_index_exists(@flags, 'farewell')) {
     msg(colorize('&7Farewell&8: &cNo farewell set.'));
   } else {
     msg(colorize('&7Farewell&8: &f'.@flags['farewell']));
   }
 
+  // check location
   if(has_permission('smash.donorland.t4')) {
     msg(colorize('&7Location&8: &fx:'@xloc[0] - 20.'&7, &fz:'@zloc[0] - 20));
   } else if(has_permission('smash.donorland.t6')) {
@@ -230,32 +347,59 @@
   } else {
     msg(colorize('&cUhhh, permission problem? Report to an admin.'));
   }
+
 <<<
 
+#===============================#
+# flag: greeting
+#===============================#
+
 *:/donorland greeting $ = >>>
+
+  // vars
   @player = player();
   @pregion = 'dl-'.@player;
+
+  // check if has permission
   if(!has_permission('smash.donorland')) {
     _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
   }
+
+  // check player world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
+
+  // check if region exists
   if(!sk_region_exists(pworld(), @pregion)) {
     _dldie('Derp. You have not yet made a claim.');
   } else {
+
+    // set flag
     sk_region_flag(pworld(), @pregion, greeting, $);
     _dldie('Greeting set to&8: &f'.$);
   }
+
 <<<
 
+#===============================#
+# flag: farewell
+#===============================#
+
 *:/donorland farewell $ = >>>
+
+  // vars
   @player = player();
   @pregion = 'dl-'.@player;
+
+  // check player worls
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   } else {
+
+    // set flag
     sk_region_flag(pworld(), @pregion, farewell, $);
     _dldie('Farewell set to&8: &f'.$);
   }
+  
 <<<
