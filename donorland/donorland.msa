@@ -55,8 +55,8 @@
   sk_region_remove(pworld(), @tempregion);
   sk_region_create(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
   sk_region_addowner(@pregion, pworld(), @player);
-  sk_region_flag(pworld(), @pregion, greeting, '&fWelcome to &5'.@player.'\'s &fDonorland!');
-  sk_region_flag(pworld(), @pregion, farewell, '&fNow leaving &5'.@player.'\'s &fDonorland!');
+  sk_region_flag(pworld(), @pregion, greeting, '&5&lDonorland &8\u00BB &7Welcome to &5'.@player.'\'s &7Donorland!');
+  sk_region_flag(pworld(), @pregion, farewell, '&5&lDonorland &8\u00BB &7Now leaving &5'.@player.'\'s &7Donorland!');
   sk_region_flag(pworld(), @pregion, enderpearl, deny, NON_MEMBERS);
   sk_region_flag(pworld(), @pregion, 'blocked-cmds', '/sethome, /tpahere, /tpaccept', NON_MEMBERS);
   runas('~console', '/rg flag '.@pregion.' glide -w survival -g nonmembers deny');
@@ -298,11 +298,6 @@
   // vars
   @player = player();
   @pregion = 'dl-'.@player;
-  @xloc = array(sk_region_info(@pregion, 'survival', 0)[0][0]);
-  @zloc = array(sk_region_info(@pregion, 'survival', 0)[0][2]);
-  @flags = sk_region_flags(@pregion, pworld());
-  @trustlist = sk_region_members(@pregion, pworld())[names]
-  @players = array_implode(@trustlist, color(7).', '.color(f));
 
   // check permission
   if(!has_permission('smash.donorland')){
@@ -313,6 +308,13 @@
   if(!sk_region_exists(pworld(), @pregion)) {
     _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
   }
+
+  // vars
+  @xloc = array(sk_region_info(@pregion, 'survival', 0)[0][0]);
+  @zloc = array(sk_region_info(@pregion, 'survival', 0)[0][2]);
+  @flags = sk_region_flags(@pregion, pworld());
+  @trustlist = sk_region_members(@pregion, pworld())[names]
+  @players = array_implode(@trustlist, color(7).', '.color(f));
   
   msg(colorize('&5&lDonorland &8\u00BB &7Information'));;
 
