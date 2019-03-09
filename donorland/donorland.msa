@@ -115,20 +115,30 @@
 #===============================#
 # trust
 #===============================#
-*:/donorland trust $player = >>>
+*:/donorland trust [$player=''] = >>>
 
   // vars
   @player = player();
   @pregion = 'dl-'.@player;
+
+  // check permission
+  if(!has_permission('smash.donorland')) {
+    _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
+  }
+
+  // check if player specified
+  if($player == '') {
+    _dldie('You must specify a player to trust.');
+  }
 
   // check player world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
 
-  // check permission
-  if(!has_permission('smash.donorland')) {
-    _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
+  // check if region exists
+  if(!sk_region_exists(pworld(), @pregion)) {
+    _dldie('Derp. You have not yet made a claim.');
   }
 
   // require player confirmation
@@ -157,20 +167,30 @@
 #===============================#
 # untrust
 #===============================#
-*:/donorland untrust $player = >>>
+*:/donorland untrust [$player=''] = >>>
 
   // vars
   @player = player();
   @pregion = 'dl-'.@player;
 
+  // check permission
+  if(!has_permission('smash.donorland')){
+    _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
+  }
+
+  // check if player specified
+  if($player == '') {
+    _dldie('You must specify a player to untrust.');
+  }
+
   // check player world
   if(pworld(@player) != 'survival') {
     _dldie('You are not in the right world to use this command.');
   }
-
-  // check permission
-  if(!has_permission('smash.donorland')){
-    _dldie('You must be at least &aLord &7donor rank to use this command. Type &5/buy');
+  
+  // check if region exists
+  if(!sk_region_exists(pworld(), @pregion)) {
+    _dldie('Derp. You have not yet made a claim.');
   } else {
     // ugly uuid is ugly
     #sk_region_remmember(@pregion, pworld(), $player);
