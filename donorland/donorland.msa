@@ -4,7 +4,7 @@
 # +------------------------------------------------------+ #
 ############################################################
 
-*:/donorland = foreach(split('\\n', read('../../docs/donorland.txt')), @msg) { msg(colorize(@msg)) }
+*:/donorland = foreach(split('\\n', read('../../LocalPackages/donorland/donorland.txt')), @msg) { msg(colorize(@msg)) }
 
 #===============================#
 # claim

@@ -1,0 +1,15 @@
+&5&l*&7&m--------------&8[&f&lSmashcraft &5&lDonorland&8]&7&m--------------&5&l*
+\n
+&7Donorland is available to &aLord &7and higher donors only. Your
+&7donorland claim must be at least 30 blocks from ANY other
+&7claimed land.
+\n
+	&5/donorland claim&8: &7Create protection. Stand on center block.
+	&5/donorland unclaim&8: &7Removes protection. Use with caution.
+	&5/donorland trust &7<&5player&7>&8: &7Grant a player access.
+	&5/donorland untrust &7<&5player&7>&8: &7Remove a player's access.
+	&5/donorland info&8: &7Displays info on your donorland.
+	&5/donorland move&8: &7Move donorland to current location.
+	&5/donorland greeting &7<&5msg&7>&8: &7Change your greeting message
+	&5/donorland farewell &7<&5msg&7>&8: &7Change your farewell message
+\n 
