@@ -292,15 +292,15 @@ register_command('donorland', array(
         #===============================#
         # upgrade
         #===============================#
-        case 'ugt':
+        // case 'ugt':
 
-          // check if region exists
-          if(!sk_region_exists(pworld(), @pregion)) {
-            _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
-          }
+        //   // check if region exists
+        //   if(!sk_region_exists(pworld(), @pregion)) {
+        //     _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
+        //   }
 
-          @plots = sk_region_intersect(pworld(@player), @pregion);
-          msg(@plots);
+        //   @plots = sk_region_intersect(pworld(@player), @pregion);
+        //   msg(@plots);
 
         #===============================#
         # flag: greeting
