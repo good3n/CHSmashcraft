@@ -4,18 +4,6 @@
 // # +------------------------------------------------------+ #
 // ############################################################
 
-proc(_dldie, @text,
-  die(colorize('&5&lDonorland &8\u00BB &7'.@text))
-);
-
-proc(_dlkill, @text,
-  die(colorize('&5&lDonorland &c\u00BB &7'.@text))
-);
-
-proc(_dlmsg, @text,
-  msg(colorize('&5&lDonorland &a\u00BB &7'.@text))
-);
-
 proc _dlexists() {
   if(sk_region_exists(pworld(), 'dl-'.player())) {
     die(colorize('&5&lDonorland &c\u00BB &7Uh.. you aready have a claim?'))
@@ -37,15 +25,15 @@ register_command('donorland', array(
         die();
       }
 
-      @player = player();
+      @player = to_lower(player());
       @loc = ploc();
       @pregion = 'dl-'.@player;
       @tempregion = 'temp-'.@player;
 
       // check player world
-      if(pworld(@player) != 'survival') {
-        _dlkill('You are not in the right world to use this command.');
-      }
+      // if(pworld(@player) != 'survival') {
+      //   _dlkill('You are not in the right world to use this command.');
+      // }
 
       switch(@args[0]) { 
 
@@ -53,9 +41,6 @@ register_command('donorland', array(
         # claim
         #===============================#
         case 'claim':
-
-          // vars
-          @dloc = array(@loc['x'] + 20, @loc['y'], @loc['z'] - 20, pworld());
 
           // check if region exists
           _dlexists();
@@ -194,17 +179,18 @@ register_command('donorland', array(
           // get all regions
           @regions = sk_all_regions(pworld());
 
-          // remove this region from all regions list
+          // remove player region from regions list
           array_remove_values(@regions, @pregion);
-          foreach(@regions, @oregions){
+          
+          foreach(@regions, @oregion){
 
             // check if temp region is in other regions list
-            if(to_lower(@oregions) != to_lower(@tempregion)) {
+            if(to_lower(@oregion) != to_lower(@tempregion)) {
 
               // check if temp region overlaps other regions
-              if(sk_region_overlaps(pworld(), @tempregion, @oregions)) {
+              if(sk_region_overlaps(pworld(), @tempregion, @oregion)) {
                 sk_region_remove(pworld(), @tempregion);
-                _dldie('This claim is too close to &f'.@oregions.'&7. Try somewhere else.');
+                _dldie('This claim is too close to &f'.@oregion.'&7. Try somewhere else.');
               }
             }
           }
@@ -292,15 +278,102 @@ register_command('donorland', array(
         #===============================#
         # upgrade
         #===============================#
-        // case 'ugt':
+        case 'upgrade':
 
-        //   // check if region exists
-        //   if(!sk_region_exists(pworld(), @pregion)) {
-        //     _dldie('&cDerp. &7You don\'t have any &5Donorland &7claimed.');
-        //   }
+          // check if region exists
+          if(!sk_region_exists(pworld(), @pregion)) {
+            die(colorize('&cDerp. &7You don\'t have any &5Donorland &7claimed.'));
+          }
 
-        //   @plots = sk_region_intersect(pworld(@player), @pregion);
-        //   msg(@plots);
+          // get player donorland info
+          @info = sk_region_info(@pregion, pworld(@player));
+
+          // check donor perms
+          if(has_permission('smash.donorland.t4')) {
+            _dlkill('You must be &bTier 6 &7to upgrade your claim.');
+          }
+          if(has_permission('smash.donorland.t6') && @info[5] == '665856') {
+            _dlkill('You are already upgraded to the max for your tier.');
+          }
+          if(has_permission('smash.donorland.t7') && @info[5] >= '952576') {
+            _dlkill('You already have the largest available claim size. You beast.');
+          }
+
+          // create temp region for overlap test
+          sk_region_create(pworld(), @tempregion, array(
+            array(@info[0][0][0] + 50, 255, @info[0][0][2] + 50),
+            array(@info[0][1][0] - 50, 0, @info[0][1][2] - 50)
+          ));
+
+          // get all regions
+          @regions = sk_all_regions(pworld());
+
+          // remove player region from regions list
+          array_remove_values(@regions, @pregion);
+          
+          // loop through all regions
+          foreach(@regions as @region) {
+
+            // don't include temp region when checking regions
+            if(@region != @tempregion) {
+
+              // check if temp region overlaps other regions
+              if(sk_region_overlaps(pworld(), @tempregion, @region)) {
+
+                // fail, remove temp region
+                sk_region_remove(pworld(), @tempregion);
+
+                // die on fail
+                msg('This claim is too close to &f'.@region.'&7. Try somewhere else.');
+                
+              }
+
+            }
+
+          }
+
+          // pass, remove temp region
+          sk_region_remove(pworld(), @tempregion);
+          
+          // require player confirmation
+          _dlmsg('Are you ready to upgrade? Type &a/yes&7 or &c/no');
+          @id = bind(player_command, null, null, @event, @pregion, @player, @info) {
+
+            // if yes
+            if(@event['command'] == '/yes') {
+
+              sk_region_update(pworld(), @pregion, array(
+                array(@info[0][0][0] + 5, 255, @info[0][0][2] + 5),
+                array(@info[0][1][0] - 5, 0, @info[0][1][2] - 5)
+              ));
+
+              // check donor perms
+              if(has_permission('smash.donorland.t6')) {
+                _dlmsg('&7You upgraded your &5&lDonorland &7to &f50x50&7!');
+              }
+              if(has_permission('smash.donorland.t7')) {
+                _dlmsg('&7You upgraded your &5&lDonorland &7to &f60x60&7!');
+              }
+
+            // if no
+            } else if(@event['command'] == '/no') {
+              _dlkill('Your donorland has not been upgraded!');
+
+            // if anything else
+            } else {
+              _dlmsg('Upgrade canceled.');
+            }
+            unbind();
+            cancel();
+          }
+
+          // if expires
+          set_timeout(15000, closure(){
+            if(has_bind(@id)) {
+              unbind(@id);
+              _dlmsg('&cCommand expired. &7Your donorland has not been upgraded.');
+            }
+          });
 
         #===============================#
         # flag: greeting
