@@ -31,9 +31,9 @@ register_command('donorland', array(
       @tempregion = 'temp-'.@player;
 
       // check player world
-      // if(pworld(@player) != 'survival') {
-      //   _dlkill('You are not in the right world to use this command.');
-      // }
+      if(pworld(@player) != 'survival') {
+        _dlkill('You are not in the right world to use this command.');
+      }
 
       switch(@args[0]) { 
 
