@@ -5,30 +5,30 @@
 // ############################################################
 
 // prefix
-@dl = '&5&lDonorland';
+@prefix = '&5&lDonorland';
 
 // define procs
 proc(_dldie, @text,
-  die(colorize(@dl.' &8\u00BB &7'.@text));
+  die(colorize(@prefix.' &8\u00BB &7'.@text));
 );
 
 proc(_dlkill, @text,
-  die(colorize(@dl.' &c\u00BB &7'.@text));
+  die(colorize(@prefix.' &c\u00BB &7'.@text));
 );
 
 proc(_dlmsg, @text,
-  msg(colorize(@dl. ' &a\u00BB &7'.@text));
+  msg(colorize(@prefix. ' &a\u00BB &7'.@text));
 );
 
 proc(_dlexist,
 	if(sk_region_exists(pworld(), 'dl-'.player())) {
-    _dlkill('Uh.. you aready have '.@dl.'&7.');
+    _dlkill('Uh.. you aready have '.@prefix.'&7.');
   }
 );
 
 proc(_dlnoexist,
 	if(!sk_region_exists(pworld(), 'dl-'.player())) {
-    _dlkill('You do not have '.@dl.'&7.');
+    _dlkill('You do not have '.@prefix.'&7.');
   }
 );
 
@@ -91,12 +91,12 @@ register_command('donorland', array(
           sk_region_remove(pworld(), @tempregion);
           sk_region_create(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
           sk_region_addowner(@pregion, pworld(), @player);
-          sk_region_flag(pworld(), @pregion, greeting, @dl.' &8\u00BB &7Welcome to &f'.@player.'\'s &7Donorland!');
-          sk_region_flag(pworld(), @pregion, farewell, @dl.' &8\u00BB &7Now leaving &f'.@player.'\'s &7Donorland!');
+          sk_region_flag(pworld(), @pregion, greeting, @prefix.' &8\u00BB &7Welcome to &f'.@player.'\'s &7Donorland!');
+          sk_region_flag(pworld(), @pregion, farewell, @prefix.' &8\u00BB &7Now leaving &f'.@player.'\'s &7Donorland!');
           sk_region_flag(pworld(), @pregion, enderpearl, deny, NON_MEMBERS);
           sk_region_flag(pworld(), @pregion, 'blocked-cmds', '/sethome, /tpahere, /tpaccept', NON_MEMBERS);
           runas('~console', '/rg flag '.@pregion.' glide -w survival -g nonmembers deny');
-          _dldie('Success! Your '.@dl.' &7has been claimed.');
+          _dldie('Success! Your '.@prefix.' &7has been claimed.');
 
         #===============================#
         # unclaim
@@ -105,15 +105,15 @@ register_command('donorland', array(
 
           // check if region exists
           if(!sk_region_exists(pworld(), @pregion)) {
-            _dldie('You don\'t have any '.@dl.'&7 to unclaim.');
+            _dldie('You don\'t have any '.@prefix.'&7 to unclaim.');
           }
 
           // require player confirmation
           _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
-          @id = bind(player_command, null, null, @event, @pregion, @dl) {
+          @id = bind(player_command, null, null, @event, @pregion, @prefix) {
             if(@event['command'] == '/confirm') {
               sk_region_remove(pworld(), @pregion);
-              _dlmsg('You have unclaimed your '.@dl);
+              _dlmsg('You have unclaimed your '.@prefix);
             } else if(@event['command'] == '/cancel') {
               _dlmsg('Unclaiming canceled.');
             } else {
@@ -222,7 +222,7 @@ register_command('donorland', array(
 
           // require player confirmation
           _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
-          @id = bind(player_command, null, null, @event, @pregion, @player, @loc, @dl) {
+          @id = bind(player_command, null, null, @event, @pregion, @player, @loc, @prefix) {
             if(@event['command'] == '/confirm') {
               if(has_permission('smash.donorland.t4')) {
                 sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
@@ -231,7 +231,7 @@ register_command('donorland', array(
               } else if(has_permission('smash.donorland.t7')) {
                 sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 30, 255, @loc['z'] + 30), array(@loc['x'] - 30, 0, @loc['z'] - 30)));
               }
-              _dlmsg('&aSuccess! &7You\'ve moved your '.@dl.' &7to \n&fx: '.ploc()[0].' z: '.ploc()[2]);
+              _dlmsg('&aSuccess! &7You\'ve moved your '.@prefix.' &7to \n&fx: '.ploc()[0].' z: '.ploc()[2]);
             } else if(@event['command'] == '/cancel') {
               _dlmsg('Your donorland has not been moved.');
             } else {
@@ -359,7 +359,7 @@ register_command('donorland', array(
           
           // require player confirmation
           _dlmsg('Are you ready to upgrade? Type &a/yes&7 or &c/no');
-          @id = bind(player_command, null, null, @event, @pregion, @player, @info, @dl) {
+          @id = bind(player_command, null, null, @event, @pregion, @player, @info, @prefix) {
 
             // if yes
             if(@event['command'] == '/yes') {
@@ -371,10 +371,10 @@ register_command('donorland', array(
 
               // check donor perms
               if(has_permission('smash.donorland.t6')) {
-                _dlmsg('&7You upgraded your '.@dl.' &7to &f50x50&7!');
+                _dlmsg('&7You upgraded your '.@prefix.' &7to &f50x50&7!');
               }
               if(has_permission('smash.donorland.t7')) {
-                _dlmsg('&7You upgraded your '.@dl.' &7to &f60x60&7!');
+                _dlmsg('&7You upgraded your '.@prefix.' &7to &f60x60&7!');
               }
 
             // if no
