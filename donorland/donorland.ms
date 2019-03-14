@@ -109,12 +109,12 @@ register_command('donorland', array(
           }
 
           // require player confirmation
-          _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
+          _dlmsg('Are you sure? Type &a/yes&7 or &c/no');
           @id = bind(player_command, null, null, @event, @pregion, @prefix) {
-            if(@event['command'] == '/confirm') {
+            if(@event['command'] == '/yes') {
               sk_region_remove(pworld(), @pregion);
               _dlmsg('You have unclaimed your '.@prefix);
-            } else if(@event['command'] == '/cancel') {
+            } else if(@event['command'] == '/no') {
               _dlmsg('Unclaiming canceled.');
             } else {
               _dlmsg('Unclaiming canceled.');
@@ -146,12 +146,12 @@ register_command('donorland', array(
 
           // require player confirmation
           @p = @args[1];
-          _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
+          _dlmsg('Are you sure? Type &a/yes&7 or &c/no');
           @id = bind(player_command, null, null, @event, @pregion, @p) {
-            if(@event['command'] == '/confirm') {
+            if(@event['command'] == '/yes') {
               runas('~console', '/rg addmember '.@pregion.' -w '.pworld().' -n '.@p);
               _dlmsg('Trusted&f '.@p);
-            } else if(@event['command'] == '/cancel') {
+            } else if(@event['command'] == '/no') {
               _dlmsg('&f'.@p.' &7was not trusted.');
             } else {
               _dlmsg('Trust request cancelled');
@@ -221,9 +221,9 @@ register_command('donorland', array(
           sk_region_remove(pworld(), @tempregion);
 
           // require player confirmation
-          _dlmsg('Are you sure? Type &a/confirm&7 or &c/cancel');
+          _dlmsg('Are you sure? Type &a/yes&7 or &c/no');
           @id = bind(player_command, null, null, @event, @pregion, @player, @loc, @prefix) {
-            if(@event['command'] == '/confirm') {
+            if(@event['command'] == '/yes') {
               if(has_permission('smash.donorland.t4')) {
                 sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 20, 255, @loc['z'] + 20), array(@loc['x'] - 20, 0, @loc['z'] - 20)));
               } else if(has_permission('smash.donorland.t6')) {
@@ -232,7 +232,7 @@ register_command('donorland', array(
                 sk_region_update(pworld(), @pregion, array(array(@loc['x'] + 30, 255, @loc['z'] + 30), array(@loc['x'] - 30, 0, @loc['z'] - 30)));
               }
               _dlmsg('&aSuccess! &7You\'ve moved your '.@prefix.' &7to \n&fx: '.ploc()[0].' z: '.ploc()[2]);
-            } else if(@event['command'] == '/cancel') {
+            } else if(@event['command'] == '/no') {
               _dlmsg('Your donorland has not been moved.');
             } else {
               _dlmsg('Move canceled.');
