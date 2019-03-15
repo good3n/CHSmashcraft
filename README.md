@@ -18,6 +18,8 @@ Donorland is available to **Lord** and higher donors only. Your donorland claim 
 
 `/donorland move` Move donorland to current location.
 
+`/donorland upgrade` Upgrade donorland size.
+
 `/donorland greeting <msg>` Change your greeting message
 
 `/donorland farewell <msg>` Change your farewell message
