@@ -9,29 +9,29 @@
 
 // define procs
 proc(_dldie, @text,
-  @prefix = '&5&lDonorland';
+  @prefix = @prefix;
   die(colorize(@prefix.' &8\u00BB &7'.@text));
 );
 
 proc(_dlkill, @text,
-  @prefix = '&5&lDonorland';
+  @prefix = @prefix;
   die(colorize(@prefix.' &c\u00BB &7'.@text));
 );
 
 proc(_dlmsg, @text,
-  @prefix = '&5&lDonorland';
+  @prefix = @prefix;
   msg(colorize(@prefix.' &a\u00BB &7'.@text));
 );
 
 proc(_dlexist,
-  @prefix = '&5&lDonorland';
+  @prefix = @prefix;
   if(sk_region_exists(pworld(), 'dl-'.to_lower(player()))) {
     _dlkill('Uh.. you aready have '.@prefix);
   }
 );
 
 proc(_dlnoexist,
-  @prefix = '&5&lDonorland';
+  @prefix = @prefix;
   if(!sk_region_exists(pworld(), 'dl-'.to_lower(player()))) {
     _dlkill('You do not have '.@prefix.'&7.');
   }
